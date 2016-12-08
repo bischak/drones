@@ -1,5 +1,8 @@
 package drones
 
+import java.io.{InputStream, OutputStream, PrintStream}
+import java.util.Scanner
+
 /**
   * Created by Dmytro Bischak on 08.12.16.
   */
@@ -63,30 +66,34 @@ case class Drone(platform: Platform, var x: Int, var y: Int, var direction: Dire
 
 object Drones extends App {
 
-  import java.util.Scanner
+  def run(in: InputStream, out: OutputStream): Unit = {
 
-  val scanner = new Scanner(System.in)
+    val scanner = new Scanner(in)
+    val outPrint = new PrintStream(out, true)
 
-  val platform = Platform(scanner.nextInt(), scanner.nextInt())
+    val platform = Platform(scanner.nextInt(), scanner.nextInt())
 
-  while (scanner.hasNext) {
-    val x = scanner.nextInt()
-    val y = scanner.nextInt()
-    val direction = Direction.apply(scanner.next())
+    while (scanner.hasNextInt) {
+      val x = scanner.nextInt()
+      val y = scanner.nextInt()
+      val direction = Direction.apply(scanner.next())
 
-    val drone = Drone(platform, x, y, direction)
+      val drone = Drone(platform, x, y, direction)
 
-    val commands = scanner.next()
+      val commands = scanner.next()
 
-    commands.foreach {
-      case 'L' => drone.rotateLeft()
-      case 'R' => drone.rotateRight()
-      case 'M' => drone.move()
+      commands.foreach {
+        case 'L' => drone.rotateLeft()
+        case 'R' => drone.rotateRight()
+        case 'M' => drone.move()
+      }
+
+      outPrint.println(s"${drone.x} ${drone.y} ${drone.direction.toString}")
     }
 
-    println(s"${drone.x} ${drone.y} ${drone.direction.toString}")
+    scanner.close()
   }
 
-  scanner.close()
+  run(System.in, System.out)
 
 }
